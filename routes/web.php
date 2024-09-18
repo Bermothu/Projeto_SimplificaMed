@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginUser;
+use App\Http\Controllers\RegisterUser;
 
 // Precisamos incluir o import Request para vincular o objeto request a requisição
 // Permite que o framework facilite a manipulação dessas informações coletados por post
@@ -16,9 +17,7 @@ Route::get('/', function (Request $request) {
 })->name('home');
 
 // Rota utilizada na página home para se registrar no site
-Route::get('/register', function () {
-    return view('register');
-})->name('registro');
+Route::get('/register', [RegisterUser::class, 'register'])->name('registro');
 
 // Rota utilizada na página register para acessar o perfil do usuário após o cadastro
 // Rota utilizada na página login para acessar o perfil do usuário
@@ -32,7 +31,7 @@ Route::get('/profile', function () {
 
 // Rota utilizada na página register para realizar o login do usuário
 Route::get('/login', function () {
-    return view('login');
+    return view('auth.login');
 })->name('acessar');
 
 // Passando rotas com parâmetros (passamos no caminho por chaves e parametramos na função)
