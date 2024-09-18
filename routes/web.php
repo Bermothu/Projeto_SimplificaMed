@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginUser;
 
 // Precisamos incluir o import Request para vincular o objeto request a requisição
 // Permite que o framework facilite a manipulação dessas informações coletados por post
@@ -21,15 +22,8 @@ Route::get('/register', function () {
 
 // Rota utilizada na página register para acessar o perfil do usuário após o cadastro
 // Rota utilizada na página login para acessar o perfil do usuário
-// utilizamos o import Request para manipular os dados post do usuário
-Route::post('/profile', function (Request $request) {
-    $nome = $request->post('name');
-    $email = $request->post('email');
-    $password = $request->post('password');
-    $password_confirmation = $request->post('password_confirmation');
-    return ($nome . ' : ' . $email . ' : ' . $password);
-    // return view('profile');
-})->name('perfil');
+// Passamos o padrão de chamada do controller juntamente com o 'nome' da função que queremos utilizar
+Route::post('/profile', [LoginUser::class, 'login' ])->name('perfil');
 
 // Rota para acessar perfil por metodo GET
 Route::get('/profile', function () {
