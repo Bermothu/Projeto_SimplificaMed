@@ -17,15 +17,21 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            // 0 - usuario comum; 1 - admin
+            $table->integer('permission_level')->default(0);
+            $table->string('cpf')->nullable(); // CPF
+            $table->date('data_nascimento')->nullable(); // Data de nascimento
+            $table->string('endereco')->nullable(); // Endereço
+            $table->string('telefone')->nullable(); // Telefone
             $table->rememberToken();
             $table->timestamps();
         });
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
+        // Schema::create('password_reset_tokens', function (Blueprint $table) {
+        //     $table->string('email')->primary();
+        //     $table->string('token');
+        //     $table->timestamp('created_at')->nullable();
+        // });
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();

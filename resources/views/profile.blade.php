@@ -1,95 +1,69 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil - SimplificaMed</title>
-    <!-- Estilo do perfil do usuário -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .profile-container {
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .profile-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .profile-header img {
-            border-radius: 50%;
-            width: 150px;
-            height: 150px;
-        }
-        .profile-header h1 {
-            font-size: 24px;
-            margin: 10px 0;
-        }
-        .profile-header p {
-            color: #777;
-        }
-        .profile-content {
-            text-align: left;
-        }
-        .profile-content h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        .profile-content p {
-            line-height: 1.6;
-        }
-        .contact-info {
-            margin-top: 20px;
-        }
-        .contact-info h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        .contact-info ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .contact-info ul li {
-            margin-bottom: 10px;
-            color: #555;
-        }
-        .contact-info ul li span {
-            font-weight: bold;
-        }
-    </style>
-</head>
+@extends('layout.main')
 
-<body>
-<div class="profile-container">
-        <div class="profile-header">
-            <img src="https://via.placeholder.com/150" alt="Foto do Perfil">
-            <h1>João Silva</h1>
-            <p>Desenvolvedor Web</p>
+@section('title', 'Perfil')
+
+
+<link rel="stylesheet" href="/css/agenda.css">
+
+@section('content')
+
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
         </div>
-        <div class="profile-content">
-            <h2>Sobre mim</h2>
-            <p>Sou um desenvolvedor web apaixonado por criar interfaces modernas e funcionais. Tenho experiência com HTML, CSS, JavaScript e frameworks como React e Laravel. Adoro aprender novas tecnologias e enfrentar desafios.</p>
-        </div>
-        <div class="contact-info">
-            <h3>Informações de Contato</h3>
-            <ul>
-                <li><span>Email:</span> joao.silva@email.com</li>
-                <li><span>Telefone:</span> (11) 98765-4321</li>
-                <li><span>Localização:</span> São Paulo, SP, Brasil</li>
-            </ul>
-        </div>
-        <button  type="submit"><a href="{{route('registro')}}">Voltar para registro</a></button>
-        <br>
-        <br>
-        <button  type="submit"><a href="{{route('home')}}">Voltar para a página home</a></button>
+    @endif
+
+    <div id="search-container-agenda" class="col-md-12">
+        <h1>Busque sua consulta</h1>
+        <form action="">
+            <input type="text" id="search" name="search" class="form-control" placeholder="Buscar...">
+        </form>
     </div>
-</body>
-</html>
+
+    <div id="consultas-container" class="col-md-12">
+        <h1>Consultas recentes</h1>
+
+        <div id="cards-container" class="row">
+            @if ( count( $consultas ) == 0 )
+                <p>Nenhuma consulta encontrada.</p>
+            @else
+                    @foreach ( $consultas as $consulta )
+                        <div class="card col-md-3">
+                            <img src="https://via.placeholder.com/150" alt="Imagem de consultas">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    {{$consulta->title}}
+                                    @if ($consulta->status == '1')
+                                        <span class="badge text-bg-warning">Pendente</span>
+                                    @elseif ($consulta->status == '2')
+                                        <span class="badge text-bg-primary">Confirmado</span>
+                                    @elseif ($consulta->status == '3')
+                                        <span class="badge text-bg-danger">Rejeitado</span>
+                                    @elseif ($consulta->status == '4')
+                                        <span class="badge text-bg-danger">Cancelado</span>
+                                    @elseif ($consulta->status == '5')
+                                        <span class="badge text-bg-success">Finalizado</span>
+                                    @endif
+                                </h5>
+                                
+                                <p class="card-name">{{$consulta->name}} - {{$consulta->idade}} Anos</p>
+                                <p class="card-endereco">{{$consulta->endereco}}</p>
+                                <p class="card-text">{{$consulta->descricao}}</p>
+                                <p class="card-date-time">{{\Carbon\Carbon::parse($consulta->data)->format('d/m/Y')}} ---------- {{$consulta->horario}}</p>
+
+                                <a href="{{route('exibir_consulta', $consulta->id)}}" class="btn btn-primary">Visualizar</a>
+                                <a href="{{route('editar_consulta', $consulta->id)}}" class="btn btn-secondary">Editar</a>
+                                
+                            </div>
+                        </div>
+                    @endforeach
+            @endif
+        </div>
+    
+    </div>
+
+<!-- @foreach ( $consultas as $consulta )
+            <p>{{$consulta->title}} -- {{$consulta->name}}</p>
+        @endforeach -->
+
+@endsection

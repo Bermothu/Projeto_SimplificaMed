@@ -16,10 +16,9 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    // Certifique-se de adicionar os campos que podem ser atualizados no array fillable
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'name', 'email', 'password', 'cpf', 'data_nascimento', 'endereco', 'telefone', 'permission_level',
     ];
 
     /**
@@ -44,4 +43,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function consultas(){
+    return $this->hasMany(Consulta::class);
+}
 }

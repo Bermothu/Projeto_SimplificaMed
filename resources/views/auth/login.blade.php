@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acesso - SimplificaMed</title>
-</head>
-<body>
+@extends('layout.main')
+
+@section('title', 'Acesso - SimplificaMed')
+
+@section('content')
+
 <header>
         <h1>Simplifica Med</h1>
         <nav>
@@ -14,22 +12,38 @@
             </a>
         </nav>
 
+        @if ($errors->any())
+            <div>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <main>
-            <form action="{{url('/profile')}}" method="POST">
+            <form action="{{route('perfil_login')}}" method="POST">
                 @csrf
                 <h2>Entrar</h2>
                 <div>
                     <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Insira o e-mail">
+                    <input type="email" name="email" placeholder="Insira o e-mail">
                 </div>
                 <div>
                     <label for="password">Senha</label>
-                    <input type="password" id="password" placeholder="Insira a senha">
+                    <input type="password" name="password" placeholder="Insira a senha">
                     <a href="#">Esqueceu a senha?</a>
                 </div> 
                 <button type="submit">Entrar</button>
             </form>
+            
         </main>
     </header>
-</body>
-</html>
+@endsection
