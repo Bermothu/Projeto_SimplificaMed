@@ -32,9 +32,25 @@
                 @endif
             </p>
         </div>
-    </div>
+        @if (Auth::user()->permission_level == 1)
+        
+            <div class="card-header">
+                <h3>Associar um profissional</h3>
+            </div>
 
-    <a href="{{ route('consultas') }}" class="btn btn-primary mt-3">Voltar</a>
+            <div class="card-body">
+                <select name="" id=""></select>
+            </div>
+        @endif
+    </div>
+            
+    <!-- Botão de voltar -->
+    <a href="{{url()->previous()}}" class="btn btn-primary mt-3">Voltar</a>
+    @if (Auth::user()->permission_level == 1)
+        <a href="" class="btn btn-secondary mt-3">Associar</a>
+        <a href="" class="btn btn-success mt-3">Confirmar</a>
+        <a href="" class="btn btn-danger mt-3">Rejeitar</a>
+    @endif
 </div>
 
 @endsection

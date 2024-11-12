@@ -19,7 +19,7 @@
         <div class="banner-content">
             <h2>Seja bem-vindo!</h2>
             <p>Precisa agendar sua consulta e não pode ir até o consultório?</p>
-            <button>Agende aqui</button>
+            <a href="{{route('agenda')}}"><button>Agende aqui</button></a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit">Logout</button>
@@ -30,92 +30,24 @@
     <!-- -------------------------------  Agendamentos  -------------------------------  -->
     <section class="appointments">
         
-        <div class="appointments-list">
-            <h3>Agendamentos Realizados</h3>
-            <div class="appointment">
-                <p>Rafael Torres - Médico</p>
-                <p>Segunda, 4 Setembro, 12:00</p>
-                <span>Ocupado</span>
-            </div>
-            <div class="appointment">
-                <p>Rafael Torres - Médico</p>
-                <p>Segunda, 4 Setembro, 12:00</p>
-                <span>Ocupado</span>
-            </div>
-            <div class="appointment">
-                <p>Rafael Torres - Médico</p>
-                <p>Segunda, 4 Setembro, 12:00</p>
-                <span>Ocupado</span>
-            </div>
-        </div>
-
-    <!-- -------------------------------  Calendário  -------------------------------  -->
-        <div class="calendar">
-            <h3>Setembro 2024</h3>
-
-        <!-- dark mode -->
-  
-        <div class="toggle">
-            <input id="switch" type="checkbox" name="theme">
-            <label for="switch">Toggle</label>
-        </div>
-
-
-            <div class="calendar-grid">
-                <!-- Adicione um calendário interativo ou estático -->
-                <div id="container">
-                    <div id="header">
-                      <div id="monthDisplay"></div>
-              
-                      <div>
-                        <button id="backButton">Voltar</button>
-                        <button id="nextButton">Próximo</button>
-                      </div>
-                        
-                    </div>
-              
-                    <div id="weekdays">
-                      <div>Domingo</div>
-                      <div>Segunda-feira</div>
-                      <div>Terça-feira</div>
-                      <div>Quarta-feira</div>
-                      <div>Quinta-feira</div>
-                      <div>Sexta-feira</div>
-                      <div>Sábado</div>
-                    </div>
-              
-              
-                    <!-- div dinamic -->
-                    <div id="calendar" ></div>
-              
-                 
-                </div>
-              
-                <div id="newEventModal">
-                  <h2>New Evente</h2>
-              
-                  <input id="eventTitleInput" placeholder="Event Title"/>
-              
-                  <button id="saveButton"> Salvar</button>
-                  <button id="cancelButton">Cancelar</button>
-                </div>
-              
-                <div id="deleteEventModal">
-                  <h2>Evento</h2>
-              
-                  <div id="eventText"></div><br>
-              
-              
-                  <button id="deleteButton">Deletar</button>
-                  <button id="closeButton">Fechar</button>
-                </div>
-              
-                <div id="modalBackDrop"></div>
-              
-              
-                <script src="./Calendario-master/scripts/darkMode.js"></script>
-                <script src="./scripts/main.js"></script>
+        <div class="container">
+            <div class="row">
                 
+                <!-- Listagem de consultas -->
+                <div class="col-md-6">
+                    <h3>Consultas do dia</h3>
+                    <div id="consultas-list">
+                        @include('consultas-list', ['consultas' => $consultas])
+                    </div>
+                </div>
+
+                @if (Auth::user()->permission_level == 1)
+                    <!-- Calendário -->
+                    <div class="col-md-6">
+                        <h3>Selecione uma data</h3>
+                        <input type="date" id="calendar" class="form-control" value="{{ now()->toDateString() }}">
+                    </div>
+                @endif
             </div>
         </div>
     </section>
@@ -177,5 +109,31 @@
             </div>
         </div>
     </section>
+
+    <script>
+        document.getElementById('calendar').addEventListener('change', function() {
+            const selectedDate = this.value; // A data no formato YYYY-MM-DD
+
+            fetch(`/consultas/${selectedDate}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na requisição: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.html) {
+                        document.getElementById('consultas-list').innerHTML = data.html;
+                    } else {
+                        document.getElementById('consultas-list').innerHTML = '<p>Erro ao carregar consultas.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    document.getElementById('consultas-list').innerHTML = '<p>Erro ao carregar consultas.</p>';
+                });
+        });
+    </script>
+
 
 @endsection

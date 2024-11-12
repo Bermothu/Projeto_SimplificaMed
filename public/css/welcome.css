@@ -467,3 +467,21 @@ footer button:hover {
     position: absolute;
     background-color: rgba(0,0,0,0.8);
   }
+
+  #calendar {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 10px;
+  }
+
+  .list-group-item {
+    max-width: 600px; /* Defina a largura máxima desejada */
+    word-wrap: break-word; /* Quebra a palavra se necessário */
+}
+.truncate {
+    display: inline-block; /* Para garantir que as propriedades de overflow funcionem */
+    width: 100%; /* Para que a largura do elemento pai seja respeitada */
+    white-space: nowrap; /* Não quebra o texto em várias linhas */
+    overflow: hidden; /* Oculta o texto que transborda */
+    text-overflow: ellipsis; /* Adiciona '...' no final do texto truncado */
+}

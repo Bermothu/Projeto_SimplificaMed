@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // importa a biblioteca de query builder do Laravel
+use Illuminate\Support\Facades\DB;
 use App\Models\Consulta; //CHAMAMOS O MODEL DA NOSSA CONSULTA
 use Illuminate\Support\Facades\Auth;
 
@@ -13,10 +13,57 @@ use Illuminate\Support\Facades\Mail;
 
 class ConsultaController extends Controller
 {
-    public function index() {
-        // chama todos os eventos referentes a tabela consultas do nosso banco de dados
-        $consultas = Consulta::all();
-        return view('profile', compact('consultas'));
+    public function index(){
+        // Verifica se o usuário é admin
+        if (Auth::user()->permission_level == 1) {
+            // Pegar todas as consultas para admin
+            $consultas = Consulta::whereDate('data', now())
+            ->orderBy('status')
+            ->with('user')->get();
+        } else {
+            // Pegar apenas as consultas do usuário normal
+            $consultas = Consulta::whereDate('data', now())
+                ->where('user_id', Auth::id())
+                ->orderBy('status') // Adiciona a condição para pegar apenas as consultas do usuário logado
+                ->with('user')->get();
+        }
+
+        return view('welcome', compact('consultas'));
+    }
+
+    public function minhasConsultas() {
+
+        if (Auth::user()->permission_level == 1) {
+            // Lista as consultas de todos os usuarios
+            $consultas = Consulta::all();
+            return view('profile', compact('consultas'));
+        }else{
+            // Lista as consultas do usuário logado
+            $consultas = Consulta::all()->where('user_id', Auth::id());
+            return view('profile', compact('consultas'));
+        }
+    }
+
+    public function getConsultasByDate($date){
+        // Verifica se o usuário é admin
+        if (Auth::user()->permission_level == 1) {
+            // Busca todas as consultas para admin
+            $consultas = Consulta::whereDate('data', $date)->with('user')->get();
+        } else {
+            // Busca apenas as consultas do usuário normal
+            $consultas = Consulta::whereDate('data', $date)
+                ->where('user_id', Auth::id()) // Adiciona a condição para pegar apenas as consultas do usuário logado
+                ->with('user')->get();
+        }
+
+        // Verificar se a coleção está vazia
+        if ($consultas->isEmpty()) {
+            return response()->json(['html' => '<p>Nenhuma consulta encontrada para essa data.</p>']);
+        }
+
+        // Renderizar a lista de consultas
+        $view = view('consultas-list', compact('consultas'))->render();
+        return response()->json(['html' => $view]);
     }
 
     public function create() {
@@ -50,7 +97,7 @@ class ConsultaController extends Controller
         $consulta->save();
 
         // Enviar e-mail para o admin
-        Mail::to('admin@gmail.com')->send(new AdminNotificationMail($consulta));
+        Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new AdminNotificationMail($consulta));
 
         // redirecionar
         return redirect()->route('consultas')->with('success', 'Agendamento realizado com sucesso!');
