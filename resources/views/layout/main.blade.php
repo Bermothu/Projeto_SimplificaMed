@@ -26,31 +26,35 @@
             <span>S</span>
             <h1>Simplifica Med</h1>
         </div>
+
         @if(!empty(Auth::user()))
             <div class="search-container"></div>
                 <input type="text" placeholder="Pesquisar">
             </div>
-
+        @endif
             <nav>
                 <ul>
-                    <li><a href="{{route('home')}}">Home</a></li>
-                    <li><a href="{{ route('agenda') }}">Agenda</a></li>
-                    @if(Auth::user()->permission_level == 1)
-                        <li><a href="{{route('profissionals')}}">Profissionais</a></li>  
+                    @if(!empty(Auth::user()))
+                        <li><a href="{{route('home')}}">Home</a></li>
+                        <li><a href="{{ route('agenda') }}">Agenda</a></li>
+                        @if(Auth::user()->permission_level == 1)
+                            <li><a href="{{route('profissionals')}}">Profissionais</a></li>  
+                        @endif
+                        <li><a href="{{route('consultas')}}">Consultas</a></li>
                     @endif
-                    <li><a href="{{route('consultas')}}">Consultas</a></li>
-                    <li><a href="{{route('registro')}}" class="hover">Registrar</a></li>
+                    @if(empty(Auth::user()))
+                        <li><a href="{{route('registro')}}" class="hover">Registrar</a></li>
+                    @endif
                 </ul> 
             </nav>
-
-            
-
-            <div class="user-icon">
-                <button>
-                    <a href="{{route('profile')}}"> =) </a>
-                </button>
-            </div>
-        @endif
+            @if(!empty(Auth::user()))
+                <div class="user-icon">
+                    <button>
+                        <a href="{{route('profile')}}"> =) </a>
+                    </button>
+                </div>
+            @endif
+        
     </header>
 
     @yield('content')

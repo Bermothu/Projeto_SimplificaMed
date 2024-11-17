@@ -45,6 +45,13 @@ class User extends Authenticatable
     }
 
     public function consultas(){
-    return $this->hasMany(Consulta::class);
-}
+        return $this->hasMany(Consulta::class);
+    }
+
+    public function profissionalConsultas(){
+        return $this->hasMany(ProfissionalConsulta::class);
+    }
+
+    
+
 }

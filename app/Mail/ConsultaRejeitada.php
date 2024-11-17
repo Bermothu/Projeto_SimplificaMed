@@ -8,23 +8,37 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Consulta;
 
-class AdminNotificationMail extends Mailable
+class ConsultaRejeitada extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $consulta;
 
-    public function __construct($consulta)
-    {
+    /**
+     * Create a new message instance.
+     *
+     * @param Consulta $consulta
+     */
+    public function __construct(Consulta $consulta){
         $this->consulta = $consulta;
     }
 
-    public function build()
-    {
-        return $this->view('emails.admin_notification')
-                    ->subject('Nova Consulta Cadastrada')
-                    ->with('consulta', $this->consulta);
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
+    public function build(){
+        return $this
+            ->subject('Consulta Rejeitada')
+            ->view('emails.consulta_rejeitada')
+            ->with([
+                'titulo' => $this->consulta->title,
+                'data' => \Carbon\Carbon::parse($this->consulta->data)->format('d/m/Y'),
+                'horario' => $this->consulta->horario,
+            ]);
     }
 
     /**
@@ -33,7 +47,7 @@ class AdminNotificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nova consulta cadastrada',
+            subject: 'Consulta Rejeitada!',
         );
     }
 

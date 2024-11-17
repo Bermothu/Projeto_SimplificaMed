@@ -41,9 +41,9 @@
             <div class="form-group mb-3">
                 <label for="endereco">Endereço</label>
                 @if(Auth::user()->endereco)
-                    <input type="text" name="endereco" class="form-control" value="{{ Auth::user()->endereco }}" readonly>
+                    <input type="text" name="endereco" class="form-control" value="{{ Auth::user()->endereco }}" disabled>
                 @else
-                    <input type="text" name="endereco" class="form-control" value="{{ old('endereco') }}" required>
+                    <input type="text" name="endereco" class="form-control" value="Endereço de usuário não cadastrado" disabled>
                 @endif
             </div>
 

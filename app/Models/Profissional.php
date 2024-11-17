@@ -13,4 +13,9 @@ class Profissional extends Model
         'name', 'cpf', 'telefone','endereco', 'tipo',
     ];
 
+    public function consultas(){
+        return $this->hasMany(ProfissionalConsulta::class);
+    }
+
+
 }

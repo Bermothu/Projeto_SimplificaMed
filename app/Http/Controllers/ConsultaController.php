@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Consulta; //CHAMAMOS O MODEL DA NOSSA CONSULTA
+use App\Models\Profissional; //CHAMAMOS O MODEL Do nosso profissional
 use Illuminate\Support\Facades\Auth;
 
 use App\Mail\AdminNotificationMail;
+use App\Mail\ConsultaCancelada;
+use App\Mail\ConsultaRejeitada;
 use Illuminate\Support\Facades\Mail;
 
 
@@ -75,7 +78,6 @@ class ConsultaController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'idade' => 'required|integer|min:0',
-            'endereco' => 'required|string|max:255',
             'descricao' => 'required|string',
             'data' => 'required|date',
             'horario' => 'required',
@@ -86,7 +88,6 @@ class ConsultaController extends Controller
             'title' => $validatedData['title'],
             'user_id' => Auth::user()->id,
             'idade' => $validatedData['idade'],
-            'endereco' => $validatedData['endereco'],
             'descricao' => $validatedData['descricao'],
             'data' => $validatedData['data'],
             'horario' => $validatedData['horario'],
@@ -98,17 +99,18 @@ class ConsultaController extends Controller
 
         // Enviar e-mail para o admin
         Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new AdminNotificationMail($consulta));
-
+        
         // redirecionar
         return redirect()->route('consultas')->with('success', 'Agendamento realizado com sucesso!');
     }
 
     public function show($id){
         // Buscar a consulta pelo ID
-        $consulta = Consulta::with('user')->findOrFail($id); // Lança um erro 404 se não encontrar
+        $consulta = Consulta::with(['user', 'profissionalConsulta.profissional'])->findOrFail($id); // Lança um erro 404 se não encontrar
+        $profissionais = Profissional::all(); // Lança um erro 404 se não encontrar
 
         // Retorna a view com a consulta
-        return view('consulta.show', compact('consulta'));
+        return view('consulta.show', compact('consulta', 'profissionais'));
     }
 
     public function edit($id){
@@ -136,5 +138,32 @@ class ConsultaController extends Controller
         return redirect()->route('consultas')->with('success', 'Consulta atualizada com sucesso!');
     }
 
+    public function cancelar($id){
+        // Buscar a consulta pelo ID
+        $consulta = Consulta::findOrFail($id);
+        
+        // Atualizar o status para 4 (Cancelado)
+        $consulta->status = 4;
+        $consulta->save();
+
+        // Enviar email para o admin
+        Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new ConsultaCancelada($consulta));
+
+        // Redirecionar com uma mensagem de sucesso
+        return redirect()->back()->with('success', 'Consulta cancelada com sucesso!');
+    }
+
+    public function rejeitar($id) {
+        // Encontrar a consulta pelo ID
+        $consulta = Consulta::findOrFail($id);
+    
+        // Atualizar o status para "Rejeitado"
+        $consulta->status = 3; // 3 para "Rejeitado"
+        $consulta->save();
+    
+        Mail::to($consulta->user->email)->send(new ConsultaRejeitada($consulta));
+    
+        return redirect()->back()->with('success', 'Consulta rejeitada com sucesso.');
+    }
 
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ConsultaController;
 use App\Http\Controllers\ProfissionalController;
+use App\Http\Controllers\ProfissionalConsultaController;
 
 // Precisamos incluir o import Request para vincular o objeto request a requisição
 // Permite que o framework facilite a manipulação dessas informações coletados por post 
@@ -48,6 +49,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/profissionais/cadastrar', [ProfissionalController::class, 'store'])->name('cadastrar_profissional');
     Route::get('/profissionais/{id}', [ProfissionalController::class, 'show'])->name('exibir_profissional');
     Route::delete('/profissionais/{id}', [ProfissionalController::class, 'destroy'])->name('deletar_profissional');
+    
+    // Rotas de lojistica de consulta admin
+    Route::post('/associar-profissional', [ProfissionalConsultaController::class, 'store'])->name('associar_profissional');
+    Route::post('/consulta/confirmar/{id}', [ProfissionalConsultaController::class, 'confirmarConsulta'])->name('confirmar_consulta');
+    Route::post('/consultas/{id}/finalizar', [ProfissionalConsultaController::class, 'finalizar'])->name('finalizar_consulta');
+    Route::post('/consulta/rejeitar/{id}', [ConsultaController::class, 'rejeitar'])->name('rejeitar_consulta');
+
+    //Rotas de logistica de consulta usuário
+    Route::post('/cancelar-consulta/{id}', [ConsultaController::class, 'cancelar'])->name('cancelar_consulta');
 
 });
 
