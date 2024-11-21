@@ -10,15 +10,25 @@ use Illuminate\Support\Facades\Validator;
 use App\Mail\AdminNotificationMail;
 use Illuminate\Support\Facades\Mail;
 
+use Illuminate\Support\Facades\Auth;
+
 class ProfissionalController extends Controller
 {
     public function index(){
-        $profissionals = Profissional::all();
-        return view('profissionals.listagem', compact('profissionals'));
+        if (Auth::user()->permission_level == 1) {
+            $profissionals = Profissional::all();
+            return view('profissionals.listagem', compact('profissionals'));
+        }else{
+            return redirect()->route('home');
+        }
     }
 
     public function create(){
-        return view('profissionals.create');
+        if (Auth::user()->permission_level == 1) {
+            return view('profissionals.create');
+        }else{
+            return redirect()->route('home');
+        }
     }
 
     public function store(Request $request){
@@ -53,8 +63,12 @@ class ProfissionalController extends Controller
     }
 
     public function show($id){
-        $profissional = Profissional::find($id);
-        return view ('profissionals.show', compact('profissional'));
+        if (Auth::user()->permission_level == 1) {
+            $profissional = Profissional::find($id);
+            return view ('profissionals.show', compact('profissional'));
+        }else{
+                return redirect()->route('home');
+            }
     }
 
     public function destroy($id){
