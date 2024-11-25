@@ -98,7 +98,7 @@ class ConsultaController extends Controller
         $consulta->save();
 
         // Enviar e-mail para o admin
-        Mail::to('Simplificamed206@gmail.com')->send(new AdminNotificationMail($consulta));
+        Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new AdminNotificationMail($consulta));
         
         // redirecionar
         return redirect()->route('consultas')->with('success', 'Agendamento realizado com sucesso!');
@@ -147,7 +147,7 @@ class ConsultaController extends Controller
         $consulta->save();
 
         // Enviar email para o admin
-        Mail::to('Simplificamed206@gmail.com')->send(new ConsultaCancelada($consulta));
+        Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new ConsultaCancelada($consulta));
 
         // Redirecionar com uma mensagem de sucesso
         return redirect()->back()->with('success', 'Consulta cancelada com sucesso!');

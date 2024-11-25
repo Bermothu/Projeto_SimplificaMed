@@ -49,7 +49,7 @@
 <body>
     <div class="container">
         <h1>Consulta Confirmada com Sucesso!</h1>
-        <p>Olá {{ $consulta->user->name }},</p>
+        <p>Olá <strong>{{ $consulta->user->name }}</strong>,</p>
         <p>Sua consulta foi confirmada com sucesso. Veja abaixo os detalhes:</p>
         <ul>
             <li><strong>Título da Consulta:</strong> {{ $consulta->title }}</li>
@@ -57,7 +57,7 @@
             <li><strong>Profissional:</strong> {{ $profissional->name }}</li>
             <li><strong>Especialidade:</strong> {{ $profissional->tipo }}</li>
         </ul>
-        <p>Obrigado por utilizar nossos serviços. Estamos à disposição para quaisquer dúvidas.</p>
+        <p>Por favor, baixe o PDF em anexo junto a este email e leve no dia da consulta</p>
     </div>
     <div class="footer">
         <p>&copy; {{ date('Y') }} SimplificaMed. Todos os direitos reservados.</p>

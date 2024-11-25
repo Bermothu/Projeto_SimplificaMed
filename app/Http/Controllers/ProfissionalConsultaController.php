@@ -16,6 +16,7 @@ use App\Models\Consulta;
 use App\Models\Profissional;
 use App\Models\ProfissionalConsulta;
 
+
 class ProfissionalConsultaController extends Controller
 {
     public function store(Request $request){
@@ -42,6 +43,7 @@ class ProfissionalConsultaController extends Controller
 
         $consulta = Consulta::find($profissionalConsulta->consulta_id);
 
+        // Atualizar o status para 2 (Confirmado)
         $consulta->status = 2;
         $consulta->save();
 
