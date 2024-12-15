@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Consulta; //CHAMAMOS O MODEL DA NOSSA CONSULTA
 use App\Models\Profissional; //CHAMAMOS O MODEL Do nosso profissional
+use App\Models\ProfissionalConsulta;
 use Illuminate\Support\Facades\Auth;
 
 use App\Mail\AdminNotificationMail;
@@ -23,28 +24,57 @@ class ConsultaController extends Controller
             $consultas = Consulta::whereDate('data', now())
             ->orderBy('status')
             ->with('user')->get();
-        } else {
+        }else if (Auth::user()->permission_level == 0){
             // Pegar apenas as consultas do usuário normal
             $consultas = Consulta::whereDate('data', now())
                 ->where('user_id', Auth::id())
                 ->orderBy('status') // Adiciona a condição para pegar apenas as consultas do usuário logado
                 ->with('user')->get();
+        }else{
+            // Lista as consultas associadas ao profissional
+            $consultas = Consulta::whereDate('data', now())
+            ->whereHas('profissionalConsulta', function ($query) {
+                // Usa diretamente o profissional_id do usuário autenticado
+                $query->where('profissional_id', Auth::user()->profissional_id);
+            })
+            ->orderBy('status') // Ordenar por status
+            ->with('user') // Carregar relação com o usuário
+            ->get();
         }
 
         return view('welcome', compact('consultas'));
     }
 
-    public function minhasConsultas() {
+    public function minhasConsultas(Request $request) {
+        // Captura o parametro de busca
+        $search = $request->input('search');
 
         if (Auth::user()->permission_level == 1) {
-            // Lista as consultas de todos os usuarios
-            $consultas = Consulta::all();
-            return view('profile', compact('consultas'));
-        }else{
+            // Lista todas as consultas de todos os usuários
+            $query = Consulta::query();
+        } else if (Auth::user()->permission_level == 0) {
             // Lista as consultas do usuário logado
-            $consultas = Consulta::all()->where('user_id', Auth::id());
-            return view('profile', compact('consultas'));
+            $query = Consulta::where('user_id', Auth::id());
+        } else {
+            // Lista as consultas associadas ao profissional
+            $query = Consulta::whereHas('profissionalConsulta', function ($query) {
+                $query->where('profissional_id', Auth::user()->profissional_id);
+            });
         }
+
+        // Aplica a lógica de busca (se houver parametro)
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                ->orWhere('descricao', 'like', "%$search%")
+                ->orWhere('horario', 'like', "%$search%");
+            });
+        }
+
+        // Obtenha os resultados
+        $consultas = $query->orderBy('data', 'desc')->get();
+
+        return view('profile', compact('consultas'));
     }
 
     public function getConsultasByDate($date){
@@ -52,11 +82,20 @@ class ConsultaController extends Controller
         if (Auth::user()->permission_level == 1) {
             // Busca todas as consultas para admin
             $consultas = Consulta::whereDate('data', $date)->with('user')->get();
-        } else {
+        } else if(Auth::user()->permission_level == 1){
             // Busca apenas as consultas do usuário normal
             $consultas = Consulta::whereDate('data', $date)
                 ->where('user_id', Auth::id()) // Adiciona a condição para pegar apenas as consultas do usuário logado
                 ->with('user')->get();
+        }else{
+            $consultas = Consulta::whereDate('data', $date)
+            ->whereHas('profissionalConsulta', function ($query) {
+                // Usa diretamente o profissional_id do usuário autenticado
+                $query->where('profissional_id', Auth::user()->profissional_id);
+            })
+            ->orderBy('status') // Ordenar por status
+            ->with('user') // Carregar relação com o usuário
+            ->get();
         }
 
         // Verificar se a coleção está vazia
@@ -160,10 +199,36 @@ class ConsultaController extends Controller
         // Atualizar o status para "Rejeitado"
         $consulta->status = 3; // 3 para "Rejeitado"
         $consulta->save();
-    
+
+        // Buscar a associação de consulta e profissional pelo ID
+        $profissionalConsulta = ProfissionalConsulta::findOrFail($id);
+
+        // Atualizar o status para "Rejeitado"
+        $profissionalConsulta->status = 3; // 3 para "Rejeitado"
+        $profissionalConsulta->save();
+        
         Mail::to($consulta->user->email)->send(new ConsultaRejeitada($consulta));
+        Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new ConsultaRejeitada($consulta));
     
         return redirect()->back()->with('success', 'Consulta rejeitada com sucesso.');
+    }
+
+    public function usuario_ausente($id) {
+        // Encontrar a consulta pelo ID
+        $consulta = Consulta::findOrFail($id);
+    
+        // Atualizar o status para "usuario ausente"
+        $consulta->status = 6; // 6 para "usuario ausente"
+        $consulta->save();
+
+        // Buscar a associação de consulta e profissional pelo ID
+        $profissionalConsulta = ProfissionalConsulta::findOrFail($id);
+
+        // Atualizar o status para "usuario ausente"
+        $profissionalConsulta->status = 6; // 6 para "usuario ausente"
+        $profissionalConsulta->save();
+    
+        return redirect()->back()->with('success', 'Consulta ausentada com sucesso');
     }
 
 }

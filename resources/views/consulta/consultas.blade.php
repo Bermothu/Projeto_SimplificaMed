@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div id="consulta-create-container" class="col-md-6 offsef-md-3">
+    <div id="consulta-create-container" class="card p-4 mx-auto mt-4 mb-4" style="max-width: 600px;">
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -15,7 +15,7 @@
             </div>
         @endif
 
-        <h1>Crie sua Consulta</h1>
+        <h1 class="text-center mb-4">Crie sua Consulta</h1>
         <form action="{{route('agenda')}}" method="POST">
             @csrf
 
@@ -66,7 +66,7 @@
             </div>
 
             <!-- Botão de submissão -->
-            <button type="submit" class="btn btn-primary">Cadastrar Consulta</button>
+            <button type="submit" class="btn btn-primary w-100">Cadastrar Consulta</button>
         </form>
     </div>
 

@@ -10,12 +10,16 @@ class Profissional extends Model
 
     use HasFactory;
     protected $fillable = [
-        'name', 'cpf', 'telefone','endereco', 'tipo',
+        'id', 'name', 'cpf', 'telefone','endereco', 'tipo',
     ];
 
     public function consultas(){
         return $this->hasMany(ProfissionalConsulta::class);
     }
 
+    public function users()
+    {
+        return $this->hasMany(User::class, 'profissional_id');
+    }
 
 }

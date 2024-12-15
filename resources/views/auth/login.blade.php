@@ -3,47 +3,42 @@
 @section('title', 'Acesso - SimplificaMed')
 
 @section('content')
+<!-- <div class="container mt-5 col-md-6 offset-md-3 pb-5" style="max-width: 600px;"> -->
+<div class="main-container container col-md-6 offset-md-3 pb-5" style="max-width: 600px;">
+  @if ($errors->any())
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      @foreach ($errors->all() as $error)
+      <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </div>
+  @endif
 
-<header>
-        <h1>Simplifica Med</h1>
-        <nav>
-            <a href="#">
-                <img src="user-icon.svg" alt="Ícone de usuário">
-            </a>
-        </nav>
+  @if (session('success'))
+  <div class="alert alert-success">
+    {{ session('success') }}
+  </div>
+  @endif
 
-        @if ($errors->any())
-            <div>
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+  <main class="card p-4 shadow-sm">
+    <form action="{{ route('perfil_login') }}" method="POST">
+      @csrf
+      <h2 class="mb-4">Entrar</h2>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" name="email" id="email" class="form-control" placeholder="Insira o e-mail" value="{{ old('email') }}">
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Senha</label>
+        <input type="password" name="password" id="password" class="form-control" placeholder="Insira a senha">
+      </div>
+      <button type="submit" class="btn btn-primary w-100 mt-3">Entrar</button>
+      <div class="text-center mt-3">
+        <a href="#" class="link-primary">Esqueceu a senha?</a>
+      </div>
+    </form>
+  </main>
+</div>
 
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <main>
-            <form action="{{route('perfil_login')}}" method="POST">
-                @csrf
-                <h2>Entrar</h2>
-                <div>
-                    <label for="email">Email</label>
-                    <input type="email" name="email" placeholder="Insira o e-mail">
-                </div>
-                <div>
-                    <label for="password">Senha</label>
-                    <input type="password" name="password" placeholder="Insira a senha">
-                    <a href="#">Esqueceu a senha?</a>
-                </div> 
-                <button type="submit">Entrar</button>
-            </form>
-            
-        </main>
-    </header>
 @endsection

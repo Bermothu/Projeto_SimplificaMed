@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Profissional;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 use App\Mail\AdminNotificationMail;
@@ -57,6 +59,16 @@ class ProfissionalController extends Controller
         ]);
 
         $profissional->save();
+
+        $user = new User([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'permission_level' => 2, // permissão de profissional
+            'profissional_id' => $profissional->id, 
+        ]);
+
+        $user->save();
 
         // redirecionar
         return redirect()->route('profissionals')->with('success', 'Profissional cadastrado com sucesso!');

@@ -52,6 +52,7 @@ class ProfissionalConsultaController extends Controller
         $profissionalConsulta->save();
 
         Mail::to($consulta->user->email)->send(new ConsultaCadastradaMail($consulta));
+        Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new ConsultaCadastradaMail($consulta));
         
         // Redirecionar com uma mensagem de sucesso
         return redirect()->back()->with('success', 'Consulta confirmada com sucesso!');

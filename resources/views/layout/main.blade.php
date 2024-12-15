@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="home.css" media="screen" />
+    <!-- <link rel="stylesheet" type="text/css" href="home.css" media="screen" /> -->
+    <!-- <link rel="stylesheet" href="/css/welcome.css"> -->
+
+    
     <link rel="stylesheet" href="/css/welcome.css">
 
     <!-- Fontes do Google -->
@@ -15,6 +18,10 @@
     <!-- Bootstrap CSS-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
+    <!-- Icones -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
     <title>@yield('title')</title>
 
 </head>
@@ -24,60 +31,76 @@
     <header>
         <div class="logo">
             <span>S</span>
-            <h1>Simplifica Med</h1>
+            <!-- <h1>Simplifica Med</h1> -->
+            <a href="{{route('home')}}">SimplificaMed</a>
         </div>
-
+        <nav class="d-flex justify-content-end align-items-center">
+    <ul class="nav me-3">
+        <!-- Usuário logado -->
         @if(!empty(Auth::user()))
-            <div class="search-container"></div>
-                <input type="text" placeholder="Pesquisar">
-            </div>
-        @endif
-            <nav>
-                <ul>
-                    @if(!empty(Auth::user()))
-                        <li><a href="{{route('home')}}">Home</a></li>
-                        <li><a href="{{ route('agenda') }}">Agenda</a></li>
-                        @if(Auth::user()->permission_level == 1)
-                            <li><a href="{{route('profissionals')}}">Profissionais</a></li>  
-                        @endif
-                        <li><a href="{{route('consultas')}}">Consultas</a></li>
-                    @endif
-                    @if(empty(Auth::user()))
-                        <li><a href="{{route('registro')}}" class="hover">Registrar</a></li>
-                    @endif
-                </ul> 
-            </nav>
-            @if(!empty(Auth::user()))
-                <div class="user-icon">
-                    <button>
-                        <a href="{{route('profile')}}"> =) </a>
-                    </button>
-                </div>
+            <!-- <li class="nav-item"><a href="{{route('home')}}" class="nav-link">Home</a></li> -->
+            <li class="nav-item"><a href="{{ route('agenda') }}" class="nav-link">Agendamento</a></li>
+            @if(Auth::user()->permission_level == 1)
+                <li class="nav-item"><a href="{{route('profissionals')}}" class="nav-link">Profissionais</a></li>  
             @endif
-        
+            <li class="nav-item"><a href="{{route('consultas')}}" class="nav-link">Consultas</a></li>
+            <!-- Botão de Logout -->
+            <li class="nav-item">
+                <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-link nav-link">Logout</button>
+                </form>
+            </li>
+        @endif
+
+        <!-- Usuário Deslogado -->
+        @if(empty(Auth::user()))
+            <li class="nav-item"><a href="{{route('registro')}}" class="nav-link hover">Registrar</a></li>
+        @endif
+    </ul>
+
+    @if(!empty(Auth::user()))
+        <div class="user-icon">
+            <a href="{{route('profile')}}" class="text-decoration-none">
+                <i class="fas fa-user"></i>
+            </a>
+        </div>
+    @endif
+</nav>
+
+
     </header>
 
+    <div class="content-container">
     @yield('content')
+</div>
 
     <!-- -------------------------------  Rodapé  -------------------------------  -->
-    <footer>
-        <div class="feedback">
-            <h3>Sugestões ou reclamações</h3>
-            <input type="text" placeholder="Envie aqui">
-            <button>Enviar</button>
+    <footer class="text-white">
+    <!-- <footer class="text-white"> -->
+        <div class="container d-flex flex-column align-items-center" id="box-footer">
+            <!-- Links das redes sociais -->
+            <div class="social-links mb-3">
+                <a href="#" class="btn btn-outline-light btn-sm me-2">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+                <a href="#" class="btn btn-outline-light btn-sm me-2">
+                    <i class="fab fa-instagram"></i> Instagram
+                </a>
+                <a href="#" class="btn btn-outline-light btn-sm">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+
+            <!-- Copyright -->
+            <div class="sub-footer text-center">
+                <p class="m-0">&copy; 2024 SimplificaMed. Todos os direitos reservados.</p>
+            </div>
         </div>
-        <div class="social-links">
-            <a href="#">Facebook</a>
-            <a href="#">Instagram</a>
-            <a href="#">LinkedIn</a>
-            <br>
-            <br>
-        </div>
-        
     </footer>
 
-    <div class="sub-footer">
-        <p>&copy; 2024 ABC Real Estate. All rights reserved.</p>
-    </div>
+<!-- -------------------------------  Formulário de login  -------------------------------  -->
+
+
 </body>
 </html>

@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -12,7 +12,7 @@
     @endif
     <h2>Detalhes da Consulta</h2>
 
-    <div class="card">
+    <div class="card-profile">
         <div class="card-header">
             <h3>{{ $consulta->title }}</h3>
         </div>
@@ -40,6 +40,8 @@
                     <span class="badge text-bg-danger">Cancelado</span>
                 @elseif ($consulta->status == 5)
                     <span class="badge text-bg-success">Finalizado</span>
+                @elseif ($consulta->status == 6)
+                    <span class="badge text-bg-danger">Cliente ausente</span>
                 @endif
             </p>
 
@@ -81,8 +83,10 @@
 
                         <!-- Só exibir o botão "Associar" se não houver um profissional associado -->
                         @if(!$consulta->profissionalConsulta)
-                            <button type="submit" class="btn btn-secondary mt-3">Associar</button>
+                         <button type="submit" class="btn btn-light-associa mt-3">Associar</button>
                         @endif
+
+
                     </div>
                 </div>
             </form>
@@ -90,7 +94,7 @@
     </div>
 
     <!-- Botão de voltar -->
-    <a href="{{url()->previous()}}" class="btn btn-primary mt-3">Voltar</a>
+    <a href="{{url()->previous()}}" class="btn btn-light-blue mt-3">Voltar</a>
             
     <!-- Ações se o usuário for admin -->
     @if (Auth::user()->permission_level == 1)
@@ -98,38 +102,51 @@
     <!-- Se a consulta estiver no status 5 (finalizado) nenhum botão aparece mais -->
         @if ($consulta->profissionalConsulta && $consulta->profissionalConsulta->status != 5)
 
-            @if ($consulta->profissionalConsulta && $consulta->profissionalConsulta->status != 2)
-            <!-- Botão para confirmar a consulta -->
-                <form action="{{ route('confirmar_consulta', $consulta->profissionalConsulta->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-success">Confirmar Consulta</button>
-                </form>
-            @endif
             @if ($consulta->profissionalConsulta && $consulta->profissionalConsulta->status == 2)
-            <!-- Botão para finalizar consulta -->
+                <!-- Botão para finalizar consulta -->
                 <form action="{{ route('finalizar_consulta', $consulta->id) }}" method="POST" style="display:inline;">
                     @csrf
                     <button type="submit" class="btn btn-success mt-3">Finalizar Consulta</button>
                 </form>
+
+                <!-- Usuário não apareceu a consulta -->
+                <form action="{{ route('usuario_ausente', $consulta->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-danger mt-3">Cliente não compareceu</button>
+                </form>
             @endif
         @else
-                <!-- Reijeitar um consulta -->
-                @if($consulta->status == 1 && empty($consulta->profissionalConsulta->consulta_id))
-                    <form action="{{ route('rejeitar_consulta', $consulta->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-danger mt-3">Rejeitar Consulta</button>
-                    </form>
-                @endif
+            <!-- Rejeitar um consulta -->
+            @if($consulta->status == 1 && empty($consulta->profissionalConsulta->consulta_id))
+                <form action="{{ route('rejeitar_consulta', $consulta->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-red mt-3">Rejeitar Consulta</button>
+                </form>
+            @endif
+
         @endif
     <!-- Ações se o usuário for comum -->
-    @else
+    @elseif (Auth::user()->permission_level == 0)
         @if($consulta->status != 4 && empty($consulta->profissionalConsulta->consulta_id) && $consulta->status != 3)
             <form action="{{ route('cancelar_consulta', $consulta->id) }}" method="POST" style="display:inline;">
                 @csrf
                 <button type="submit" class="btn btn-danger mt-3">Cancelar Consulta</button>
             </form>
         @endif
+    @else
+        @if ($consulta->profissionalConsulta && $consulta->profissionalConsulta->status == 1)
+            <!-- Botão para confirmar a consulta -->
+                <form action="{{ route('confirmar_consulta', $consulta->profissionalConsulta->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-success mt-3">Aceitar Consulta</button>
+                </form>
+                <form action="{{ route('rejeitar_consulta', $consulta->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-red mt-3">Rejeitar Consulta</button>
+                </form>
+            @endif
     @endif
+
 </div>
 
 @endsection

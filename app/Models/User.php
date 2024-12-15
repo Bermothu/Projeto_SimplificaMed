@@ -18,7 +18,7 @@ class User extends Authenticatable
      */
     // Certifique-se de adicionar os campos que podem ser atualizados no array fillable
     protected $fillable = [
-        'name', 'email', 'password', 'cpf', 'data_nascimento', 'endereco', 'telefone', 'permission_level',
+        'name', 'email', 'password', 'cpf', 'data_nascimento', 'endereco', 'telefone', 'permission_level', 'profissional_id'
     ];
 
     /**
@@ -52,6 +52,9 @@ class User extends Authenticatable
         return $this->hasMany(ProfissionalConsulta::class);
     }
 
-    
+    public function profissional()
+    {
+        return $this->belongsTo(Profissional::class, 'profissional_id');
+    }
 
 }

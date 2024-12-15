@@ -11,10 +11,9 @@
 
                 <small class="text-muted">CPF: {{ $profissional->cpf }}</small>
                 <div class="d-flex justify-content-end">
-                    <a href="{{route('exibir_profissional', $profissional->id)}}" class="btn btn-primary me-2">Visualizar</a>
+                    <a href="{{route('exibir_profissional', $profissional->id)}}" class="btn btn-light-blue">Visualizar</a>
                 </div>
             </li>
         @endforeach
     </ul>
-
 @endif
