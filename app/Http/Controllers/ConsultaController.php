@@ -137,7 +137,7 @@ class ConsultaController extends Controller
         $consulta->save();
 
         // Enviar e-mail para o admin
-        Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new AdminNotificationMail($consulta));
+        Mail::to('humberto.zeferino@escolar.ifrn.edu.br')->send(new AdminNotificationMail($consulta));
         
         // redirecionar
         return redirect()->route('consultas')->with('success', 'Agendamento realizado com sucesso!');
@@ -193,25 +193,32 @@ class ConsultaController extends Controller
     }
 
     public function rejeitar($id) {
-        // Encontrar a consulta pelo ID
-        $consulta = Consulta::findOrFail($id);
+        try {
+            // Encontrar a consulta pelo ID
+            $consulta = Consulta::findOrFail($id);
     
-        // Atualizar o status para "Rejeitado"
-        $consulta->status = 3; // 3 para "Rejeitado"
-        $consulta->save();
-
-        // Buscar a associação de consulta e profissional pelo ID
-        $profissionalConsulta = ProfissionalConsulta::findOrFail($id);
-
-        // Atualizar o status para "Rejeitado"
-        $profissionalConsulta->status = 3; // 3 para "Rejeitado"
-        $profissionalConsulta->save();
-        
-        Mail::to($consulta->user->email)->send(new ConsultaRejeitada($consulta));
-        Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new ConsultaRejeitada($consulta));
+            // Atualizar o status para "Rejeitado"
+            $consulta->status = 3; // 3 para "Rejeitado"
+            $consulta->save();
     
-        return redirect()->back()->with('success', 'Consulta rejeitada com sucesso.');
+            // Buscar a associação de consulta e profissional pelo ID
+            $profissionalConsulta = ProfissionalConsulta::findOrFail($id);
+    
+            // Atualizar o status para "Rejeitado"
+            $profissionalConsulta->status = 3; // 3 para "Rejeitado"
+            $profissionalConsulta->save();
+    
+            Mail::to($consulta->user->email)->send(new ConsultaRejeitada($consulta));
+            Mail::to('emily.nogueira@escolar.ifrn.edu.br')->send(new ConsultaRejeitada($consulta));
+    
+            return redirect()->back()->with('success', 'Consulta rejeitada com sucesso.');
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Registro não encontrado.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Ocorreu um erro: ' . $e->getMessage());
+        }
     }
+    
 
     public function usuario_ausente($id) {
         // Encontrar a consulta pelo ID
@@ -231,4 +238,32 @@ class ConsultaController extends Controller
         return redirect()->back()->with('success', 'Consulta ausentada com sucesso');
     }
 
+// -------------------- TESTES ------------
+
+public function delete($id) {
+    try {
+        // Buscar a consulta pelo ID
+        $consulta = Consulta::findOrFail($id);
+
+        // Excluir associações relacionadas, se houver
+        ProfissionalConsulta::where('consulta_id', $id)->delete();
+
+        // Excluir a consulta
+        $consulta->delete();
+
+        // Redirecionar para a página de consultas com uma mensagem de sucesso
+        return redirect()->route('consultas')->with('success', 'Consulta excluída com sucesso!');
+    } catch (ModelNotFoundException $e) {
+        return redirect()->route('consultas')->with('error', 'Consulta não encontrada.');
+    } catch (\Exception $e) {
+        return redirect()->route('consultas')->with('error', 'Erro ao excluir consulta: ' . $e->getMessage());
+    }
 }
+
+
+    
+
+}
+
+
+

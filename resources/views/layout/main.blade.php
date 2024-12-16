@@ -38,11 +38,14 @@
     <ul class="nav me-3">
         <!-- Usuário logado -->
         @if(!empty(Auth::user()))
-            <!-- <li class="nav-item"><a href="{{route('home')}}" class="nav-link">Home</a></li> -->
+            @if(Auth::user()->permission_level == 0)
             <li class="nav-item"><a href="{{ route('agenda') }}" class="nav-link">Agendamento</a></li>
+            @endif
+
             @if(Auth::user()->permission_level == 1)
                 <li class="nav-item"><a href="{{route('profissionals')}}" class="nav-link">Profissionais</a></li>  
             @endif
+
             <li class="nav-item"><a href="{{route('consultas')}}" class="nav-link">Consultas</a></li>
             <!-- Botão de Logout -->
             <li class="nav-item">

@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/consulta/confirmar/{id}', [ProfissionalConsultaController::class, 'confirmarConsulta'])->name('confirmar_consulta');
         Route::post('/consultas/{id}/finalizar', [ProfissionalConsultaController::class, 'finalizar'])->name('finalizar_consulta');
         Route::post('/consulta/rejeitar/{id}', [ConsultaController::class, 'rejeitar'])->name('rejeitar_consulta');
+        Route::delete('/consultas/deletar/{id}', [ConsultaController::class, 'delete'])->name('consultas.delete');
         Route::post('/consulta/usuario-ausente/{id}', [ConsultaController::class, 'usuario_ausente'])->name('usuario_ausente');
     // --- Fim das rotas Admin
 

@@ -34,9 +34,9 @@
         <input type="password" name="password" id="password" class="form-control" placeholder="Insira a senha">
       </div>
       <button type="submit" class="btn btn-primary w-100 mt-3">Entrar</button>
-      <div class="text-center mt-3">
+      <!-- <div class="text-center mt-3">
         <a href="#" class="link-primary">Esqueceu a senha?</a>
-      </div>
+      </div> -->
     </form>
   </main>
 </div>

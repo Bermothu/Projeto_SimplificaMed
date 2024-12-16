@@ -21,7 +21,9 @@
             <input type="password" name="password_confirmation" class="form-control" placeholder="Confirme a Senha">
         </div>
         <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
-        <a href="{{ route('login') }}" class="d-block mt-3 text-center">Já tem uma conta? Faça login!</a>
+        <div class="text-center mt-3">
+        <a href="{{ route('login') }}" class="link-primary">Já tem uma conta? Faça login!</a>
+      </div>
     </form>
 
     @if ($errors->has('password'))
